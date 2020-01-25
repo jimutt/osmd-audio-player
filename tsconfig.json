@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "lib": ["ES2017", "DOM"],
+    "target": "ES6",
+    "moduleResolution": "node"
+  },
+  "include": ["src/**/*"]
+}
