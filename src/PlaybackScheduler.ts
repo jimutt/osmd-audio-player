@@ -1,16 +1,18 @@
 import StepQueue from "./StepQueue";
+import { VoiceEntry } from "opensheetmusicdisplay/build/dist/src";
 
 type NoteSchedulingCallback = (delay: number, notes: any) => void;
 
 export default class PlaybackScheduler {
-  denominator;
-  wholeNoteLength;
-  stepQueue = new StepQueue();
-  stepQueueIndex = 0;
-  scheduledTicks = new Set();
+  public denominator: number;
+  public wholeNoteLength: number;
 
-  currentTick = 0;
-  currentTickTimestamp = 0;
+  private stepQueue = new StepQueue();
+  private stepQueueIndex = 0;
+  private scheduledTicks = new Set();
+
+  private currentTick = 0;
+  private currentTickTimestamp = 0;
 
   private audioContext: AudioContext;
   private audioContextStartTime: number = 0;
@@ -55,10 +57,7 @@ export default class PlaybackScheduler {
   }
 
   private get calculatedTick() {
-    return (
-      this.currentTick +
-      Math.round((this.audioContextTime - this.currentTickTimestamp) / this.tickDuration)
-    );
+    return this.currentTick + Math.round((this.audioContextTime - this.currentTickTimestamp) / this.tickDuration);
   }
 
   start() {
@@ -69,14 +68,11 @@ export default class PlaybackScheduler {
     this.audioContextStartTime = this.audioContext.currentTime;
     this.currentTickTimestamp = this.audioContextTime;
     if (!this.schedulerIntervalHandle) {
-      this.schedulerIntervalHandle = setInterval(
-        () => this.scheduleIterationStep(),
-        this.scheduleInterval
-      );
+      this.schedulerIntervalHandle = setInterval(() => this.scheduleIterationStep(), this.scheduleInterval);
     }
   }
 
-  setIterationStep(step) {
+  setIterationStep(step: number) {
     step = Math.min(this.stepQueue.steps.length - 1, step);
     this.stepQueueIndex = step;
     this.currentTick = this.stepQueue.steps[this.stepQueueIndex].tick;
@@ -100,17 +96,16 @@ export default class PlaybackScheduler {
     this.schedulerIntervalHandle = null;
   }
 
-  loadNotes(currentVoiceEntries) {
+  loadNotes(currentVoiceEntries: VoiceEntry[]) {
     let thisTick = this.lastTickOffset;
     if (this.stepQueue.steps.length > 0) {
       thisTick = Math.min(...this.loaderFutureTicks);
     }
 
     for (let entry of currentVoiceEntries) {
-      for (let note of entry.notes) {
-        this.loaderFutureTicks.add(thisTick + note.length.realValue * this.tickDenominator);
-        let step = { tick: thisTick };
-        this.stepQueue.add(step, note);
+      for (let note of entry.Notes) {
+        this.loaderFutureTicks.add(thisTick + note.Length.RealValue * this.tickDenominator);
+        this.stepQueue.add(thisTick, note);
       }
     }
 
@@ -137,9 +132,7 @@ export default class PlaybackScheduler {
       this.noteSchedulingCallback(timeToTick / 1000, step.notes);
 
       this.stepQueueIndex++;
-      nextTick = this.stepQueue.steps[this.stepQueueIndex]
-        ? this.stepQueue.steps[this.stepQueueIndex].tick
-        : undefined;
+      nextTick = this.stepQueue.steps[this.stepQueueIndex] ? this.stepQueue.steps[this.stepQueueIndex].tick : undefined;
     }
 
     for (let tick of this.scheduledTicks) {

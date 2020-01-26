@@ -1,5 +1,12 @@
+import { Note } from "opensheetmusicdisplay/build/dist/src";
+
+type ScheduledNotes = {
+  tick: number;
+  notes: Note[];
+};
+
 export default class StepQueue {
-  steps = [];
+  steps: ScheduledNotes[] = [];
 
   constructor() {}
 
@@ -7,18 +14,16 @@ export default class StepQueue {
     return this.steps.values();
   }
 
-  add(stepObject, note) {
-    let existingStep = this.steps.find(s => s.tick === stepObject.tick);
+  add(tick: number, note: Note) {
+    let existingStep = this.steps.find(s => s.tick === tick);
     if (existingStep) {
-      stepObject = existingStep;
-      stepObject.notes.push(note);
+      existingStep.notes.push(note);
     } else {
-      stepObject.notes = [note];
-      this.steps.push(stepObject);
+      this.steps.push({ tick, notes: [note] });
     }
   }
 
-  delete(value) {
+  delete(value: ScheduledNotes) {
     const index = this.steps.findIndex(v => v.tick === value.tick);
     if (index != null) this.steps.splice(index, 1);
   }

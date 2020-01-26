@@ -58,10 +58,10 @@ export default {
       this.selectedScore =
         "https://opensheetmusicdisplay.github.io/demo/sheets/MuzioClementi_SonatinaOpus36No3_Part1.xml";
     },
-    scoreLoaded() {
+    async scoreLoaded() {
       console.log("Score loaded");
       if (this.osmd.sheet.title) this.scoreTitle = this.osmd.sheet.title.text;
-      this.pbEngine.loadScore(this.osmd);
+      await this.pbEngine.loadScore(this.osmd);
     },
     scoreChanged(scoreUrl) {
       if (this.pbEngine.state === "PLAYING") this.pbEngine.stop();
