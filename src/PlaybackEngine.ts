@@ -1,6 +1,6 @@
 import * as Soundfont from "soundfont-player";
 import PlaybackScheduler from "./PlaybackScheduler";
-import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note } from "opensheetmusicdisplay";
+import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note, Instrument } from "opensheetmusicdisplay";
 import { midiInstruments } from "./midiInstruments";
 
 enum PlaybackState {
@@ -48,7 +48,7 @@ export default class PlaybackEngine {
         master: 1,
         instruments: []
       },
-      players: []
+      players: {}
     };
 
     this.state = PlaybackState.INIT;
@@ -86,16 +86,22 @@ export default class PlaybackEngine {
           };
         })
       });
-      // @ts-ignore
-      playerPromises.push(await Soundfont.instrument(this.ac, this.getInstrumentName(i.MidiInstrumentId)));
+      playerPromises.push(
+        // @ts-ignore
+        Soundfont.instrument(this.ac, this.getInstrumentName(i.MidiInstrumentId)).then(player => ({
+          midiId: i.MidiInstrumentId,
+          playback: player
+        }))
+      );
     }
 
     this.playbackSettings.volumes.instruments = volumeInstruments;
 
     const players = await Promise.all(playerPromises);
-    this.playbackSettings.players = players; // TODO: Use object with id map instead of array
-    console.log("All players:");
-    console.log(players);
+    this.playbackSettings.players = {};
+    for (const player of players) {
+      this.playbackSettings.players[player.midiId] = player.playback;
+    }
 
     this.scheduler = new PlaybackScheduler(this.denominator, this.wholeNoteLength, this.ac, (delay, notes) =>
       this.notePlaybackCallback(delay, notes)
@@ -108,7 +114,6 @@ export default class PlaybackEngine {
   }
 
   async play() {
-    //if (!this.playbackSettings.instrument) await this.loadInstrument("acoustic_grand_piano");
     await this.ac.resume();
 
     this.cursor.show();
@@ -119,8 +124,7 @@ export default class PlaybackEngine {
 
   async stop() {
     this.state = PlaybackState.STOPPED;
-    //if (this.playbackSettings.instrument) this.playbackSettings.instrument.stop();
-    // TODO: Stop all instruments
+    this.stopInstruments();
     this.clearTimeouts();
     this.scheduler.reset();
     this.cursor.reset();
@@ -131,8 +135,7 @@ export default class PlaybackEngine {
   pause() {
     this.state = PlaybackState.PAUSED;
     this.ac.suspend();
-    //if (this.playbackSettings.instrument) this.playbackSettings.instrument.stop();
-    // TODO: Stop all instruments
+    this.stopInstruments();
     this.scheduler.setIterationStep(this.currentIterationStep);
     this.scheduler.pause();
     this.clearTimeouts();
@@ -186,23 +189,44 @@ export default class PlaybackEngine {
 
   private notePlaybackCallback(audioDelay, notes: Note[]) {
     if (this.state !== PlaybackState.PLAYING) return;
-    let scheduledNotes = [];
+    let scheduledNotes = {};
 
     for (let note of notes) {
       let noteDuration = this.getNoteDuration(note);
       if (noteDuration === 0) continue;
       let noteVolume = this.getNoteVolume(note);
 
-      scheduledNotes.push({
+      // @ts-ignore
+      let instrument = note.voiceEntry.ParentVoice.Parent as Instrument;
+
+      if (!scheduledNotes[instrument.MidiInstrumentId]) {
+        scheduledNotes[instrument.MidiInstrumentId] = [];
+      }
+
+      scheduledNotes[instrument.MidiInstrumentId].push({
         note: note.halfTone,
         duration: noteDuration / 1000,
         gain: noteVolume
       });
     }
-    // TODO: Select player from this.playbackSettings.players
-    //this.playbackSettings.instrument.schedule(this.ac.currentTime + audioDelay, scheduledNotes);
+
+    for (const iId in scheduledNotes) {
+      if (!scheduledNotes.hasOwnProperty(iId)) continue;
+      if (!this.playbackSettings.players[iId]) {
+        console.warn("Missing player for instrument ID " + iId);
+        continue;
+      }
+      this.playbackSettings.players[iId].schedule(this.ac.currentTime + audioDelay, scheduledNotes[iId]);
+    }
 
     this.timeoutHandles.push(setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
+  }
+
+  private stopInstruments() {
+    for (const iId in this.playbackSettings.players) {
+      if (!this.playbackSettings.players.hasOwnProperty(iId)) continue;
+      this.playbackSettings.players[iId].stop();
+    }
   }
 
   // Used to avoid duplicate cursor movements after a rapid pause/resume action
