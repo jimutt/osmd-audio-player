@@ -49,7 +49,6 @@
 <script>
 import InstrumentControl from "./InstrumentControl.vue";
 import BpmSlider from "./BpmSlider";
-import instruments from "../instruments";
 
 export default {
   components: {
@@ -60,13 +59,11 @@ export default {
     playbackEngine: Object
   },
   data() {
-    return {
-      instruments: instruments
-    };
+    return {};
   },
   computed: {
     instrumentLevels() {
-      return this.playbackEngine.playbackSettings.volumes.instruments;
+      return this.playbackEngine.playbackSettings.instruments;
     },
     bpmDisabled() {
       return this.playbackEngine.state === "PLAYING";
