@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "lib": ["ES2017", "DOM"],
+    "lib": ["es2019", "DOM"],
     "target": "ES6",
     "moduleResolution": "node"
   },

@@ -1,12 +1,6 @@
 <template>
   <div class="text-xs-center">
-    <v-bottom-sheet
-      inset
-      style="max-width: 500px;"
-      :persistent="true"
-      :hide-overlay="true"
-      :value="true"
-    >
+    <v-bottom-sheet inset style="max-width: 500px;" :persistent="true" :hide-overlay="true" :value="true">
       <v-card tile>
         <v-list class="blue lighten-5">
           <v-slider
@@ -24,16 +18,10 @@
               <v-list-tile-sub-title></v-list-tile-sub-title>
             </v-list-tile-content>
 
-            <v-list-tile-action
-              :class="{ 'mr-2': $vuetify.breakpoint.mdAndUp }"
-            >
+            <v-list-tile-action :class="{ 'mr-2': $vuetify.breakpoint.mdAndUp }">
               <v-btn
                 icon
-                @click="
-                  playbackEngine.state === 'PAUSED'
-                    ? playbackEngine.resume()
-                    : playbackEngine.play()
-                "
+                @click="playbackEngine.state === 'PAUSED' ? playbackEngine.resume() : playbackEngine.play()"
                 v-if="playbackEngine.state !== 'PLAYING'"
               >
                 <v-icon dark>play_arrow</v-icon>

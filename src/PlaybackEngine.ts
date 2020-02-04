@@ -1,6 +1,14 @@
 import * as Soundfont from "soundfont-player";
 import PlaybackScheduler from "./PlaybackScheduler";
-import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note, Instrument } from "opensheetmusicdisplay";
+import {
+  Cursor,
+  OpenSheetMusicDisplay,
+  MusicSheet,
+  Note,
+  Instrument,
+  InvalidEnumArgumentException,
+  Voice
+} from "opensheetmusicdisplay";
 import { midiInstruments } from "./midiInstruments";
 
 enum PlaybackState {
@@ -15,6 +23,11 @@ interface InstrumentPlayer {
   playback: Soundfont.Player;
 }
 
+interface PlaybackSettings {
+  bpm: number;
+  masterVolume: number;
+}
+
 export default class PlaybackEngine {
   private ac: AudioContext;
   private defaultBpm: number = 100;
@@ -22,16 +35,18 @@ export default class PlaybackEngine {
   private sheet: MusicSheet;
   private denominator: number;
   private scheduler: PlaybackScheduler;
-  private players: { [midiId: number]: Soundfont.Player };
+  private midiPlayers: { [midiId: number]: Soundfont.Player };
 
   private iterationSteps: number;
   private currentIterationStep: number;
 
   private timeoutHandles: number[];
 
-  public playbackSettings: any; // TODO: TYPE
+  public playbackSettings: PlaybackSettings;
   public state: PlaybackState;
   public availableInstruments = midiInstruments;
+  public scoreInstruments: Instrument[] = [];
+  public ready: boolean = false;
 
   constructor() {
     this.ac = new AudioContext();
@@ -50,8 +65,7 @@ export default class PlaybackEngine {
 
     this.playbackSettings = {
       bpm: this.defaultBpm,
-      masterVolume: 1,
-      instruments: []
+      masterVolume: 1
     };
 
     this.state = PlaybackState.INIT;
@@ -61,21 +75,23 @@ export default class PlaybackEngine {
     return Math.round((60 / this.playbackSettings.bpm) * this.denominator * 1000);
   }
 
-  public getPlaybackInstrument(scoreInstrumentId: number): [number, string] {
-    const midiInstrumentId = this.playbackSettings.instruments.find(i => i.id === scoreInstrumentId).midiInstrumentId;
-    return this.availableInstruments.find(i => i[0] === midiInstrumentId + 1);
+  public getPlaybackInstrument(voiceId: number): [number, string] {
+    if (!this.sheet) return [0, ""];
+    const voice = this.sheet.Instruments.flatMap(i => i.Voices).find(v => v.VoiceId === voiceId);
+    return this.availableInstruments.find(i => i[0] === (voice as any).midiInstrumentId + 1);
   }
 
-  async setInstrument(scoreInstrumentId: number, midiInstrumentId: number): Promise<void> {
+  async setInstrument(voice: Voice, midiInstrumentId: number): Promise<void> {
     // @ts-ignore
     const player = await Soundfont.instrument(this.ac, this.getInstrumentName(midiInstrumentId - 1));
-    let instrument = this.playbackSettings.instruments.find(i => i.id === scoreInstrumentId);
-    instrument.midiInstrumentId = midiInstrumentId;
-    this.players[midiInstrumentId] = player;
+    (voice as any).midiInstrumentId = midiInstrumentId;
+    this.midiPlayers[midiInstrumentId] = player;
   }
 
   async loadScore(osmd: OpenSheetMusicDisplay): Promise<void> {
+    this.ready = false;
     this.sheet = osmd.Sheet;
+    this.scoreInstruments = this.sheet.Instruments;
     this.cursor = osmd.cursor;
     this.denominator = this.sheet.SheetPlaybackSetting.rhythm.Denominator;
     if (this.sheet.HasBPMInfo) {
@@ -89,26 +105,14 @@ export default class PlaybackEngine {
       this.notePlaybackCallback(delay, notes)
     );
     this.countAndSetIterationSteps();
+    this.ready = true;
   }
 
   private initInstruments() {
-    this.playbackSettings.instruments = [];
     for (const i of this.sheet.Instruments) {
-      const instrumentSettings = {
-        name: i.Name,
-        id: i.Id,
-        midiInstrumentId: i.MidiInstrumentId,
-        voices: i.Voices.map(v => {
-          return {
-            name: "Voice " + v.VoiceId,
-            id: v.VoiceId,
-            volume: 1
-          };
-        })
-      };
-      this.playbackSettings.instruments.push(instrumentSettings);
       for (const v of i.Voices) {
-        (v as any).playbackInstrument = instrumentSettings;
+        console.log(v);
+        (v as any).midiInstrumentId = i.MidiInstrumentId;
       }
     }
   }
@@ -125,14 +129,14 @@ export default class PlaybackEngine {
       );
     }
     const players = await Promise.all(playerPromises);
-    this.players = {};
+    this.midiPlayers = {};
     for (const player of players) {
-      this.players[player.midiId] = player.playback;
+      this.midiPlayers[player.midiId] = player.playback;
     }
   }
 
   getInstrumentName(midiId: number): string {
-    return midiInstruments[midiId + 1][1].toLowerCase().replace(/\s+/g, "_");
+    return midiInstruments[midiId][1].toLowerCase().replace(/\s+/g, "_");
   }
 
   async play() {
@@ -184,12 +188,6 @@ export default class PlaybackEngine {
     this.scheduler.setIterationStep(schedulerStep);
   }
 
-  setVoiceVolume(instrumentId, voiceId, volume) {
-    let playbackInstrument = this.playbackSettings.instruments.find(i => i.id === instrumentId);
-    let playbackVoice = playbackInstrument.voices.find(v => v.id === voiceId);
-    playbackVoice.volume = volume;
-  }
-
   setBpm(bpm) {
     this.playbackSettings.bpm = bpm;
     if (this.scheduler) this.scheduler.wholeNoteLength = this.wholeNoteLength;
@@ -218,14 +216,15 @@ export default class PlaybackEngine {
       if (noteDuration === 0) continue;
       let noteVolume = this.getNoteVolume(note);
 
-      const midiPlaybackInstrument = (note as any).ParentVoiceEntry.ParentVoice.playbackInstrument.midiInstrumentId;
+      const midiPlaybackInstrument = (note as any).ParentVoiceEntry.ParentVoice.midiInstrumentId;
+      const fixedKey = note.ParentVoiceEntry.ParentVoice.Parent.SubInstruments[0].fixedKey || 0;
 
       if (!scheduledNotes[midiPlaybackInstrument]) {
         scheduledNotes[midiPlaybackInstrument] = [];
       }
 
       scheduledNotes[midiPlaybackInstrument].push({
-        note: note.halfTone,
+        note: note.halfTone - fixedKey * 12,
         duration: noteDuration / 1000,
         gain: noteVolume
       });
@@ -233,20 +232,20 @@ export default class PlaybackEngine {
 
     for (const iId in scheduledNotes) {
       if (!scheduledNotes.hasOwnProperty(iId)) continue;
-      if (!this.players[iId]) {
+      if (!this.midiPlayers[iId]) {
         console.warn("Missing player for instrument ID " + iId);
         continue;
       }
-      this.players[iId].schedule(this.ac.currentTime + audioDelay, scheduledNotes[iId]);
+      this.midiPlayers[iId].schedule(this.ac.currentTime + audioDelay, scheduledNotes[iId]);
     }
 
     this.timeoutHandles.push(setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
   }
 
   private stopInstruments() {
-    for (const iId in this.players) {
-      if (!this.players.hasOwnProperty(iId)) continue;
-      this.players[iId].stop();
+    for (const iId in this.midiPlayers) {
+      if (!this.midiPlayers.hasOwnProperty(iId)) continue;
+      this.midiPlayers[iId].stop();
     }
   }
 
@@ -276,10 +275,7 @@ export default class PlaybackEngine {
     return duration;
   }
 
-  private getNoteVolume(note) {
-    let instrument = note.voiceEntry.ParentVoice.Parent;
-    let playbackInstrument = this.playbackSettings.instruments.find(i => i.id === instrument.Id);
-    let playbackVoice = playbackInstrument.voices.find(v => v.id === note.voiceEntry.ParentVoice.VoiceId);
-    return playbackVoice.volume;
+  private getNoteVolume(note: Note) {
+    return note.ParentVoiceEntry.ParentVoice.Volume;
   }
 }

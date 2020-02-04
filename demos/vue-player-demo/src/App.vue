@@ -7,7 +7,7 @@
             Playback settings
           </v-list-tile-title>
         </v-list-tile>
-        <PlaybackSidebar :playbackEngine="pbEngine" />
+        <PlaybackSidebar :playbackEngine="pbEngine" v-if="pbEngineReady" />
       </v-list>
     </v-navigation-drawer>
     <v-toolbar app>
@@ -18,8 +18,8 @@
         <v-select :items="scores" label="Select Score" @change="scoreChanged" />
         <Score @osmdInit="osmdInit" @scoreLoaded="scoreLoaded" :score="selectedScore" />
       </v-container>
+      <PlaybackControls :playbackEngine="pbEngine" :scoreTitle="scoreTitle" />
     </v-content>
-    <PlaybackControls :playbackEngine="pbEngine" :scoreTitle="scoreTitle" />
   </v-app>
 </template>
 
@@ -43,6 +43,7 @@ export default {
   data() {
     return {
       pbEngine: new PlaybackEngine(),
+      pbEngineReady: false,
       scores: scores,
       selectedScore: null,
       osmd: null,
@@ -62,6 +63,7 @@ export default {
       console.log("Score loaded");
       if (this.osmd.sheet.title) this.scoreTitle = this.osmd.sheet.title.text;
       await this.pbEngine.loadScore(this.osmd);
+      this.pbEngineReady = true;
     },
     scoreChanged(scoreUrl) {
       if (this.pbEngine.state === "PLAYING") this.pbEngine.stop();

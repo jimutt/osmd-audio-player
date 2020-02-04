@@ -1,15 +1,15 @@
 <template>
   <div>
-    <h3>{{ instrument.name }}</h3>
-    <div v-for="(voice, index) in instrument.voices" :key="index">
-      <h4>{{ voice.name }}</h4>
+    <h3>{{ instrument.Name }}</h3>
+    <div v-for="(voice, index) in instrument.Voices" :key="index">
+      <h4>{{ voice.Name }}</h4>
       <v-select
         class="mb-4"
-        :value="playbackEngine.getPlaybackInstrument(instrument.id)[0]"
+        :value="playbackEngine.getPlaybackInstrument(voice.VoiceId)[0]"
         :items="instruments"
-        @change="setPlaybackInstrument"
+        @change="midiInstrumentId => setPlaybackInstrument(voice, midiInstrumentId)"
       ></v-select>
-      <VolumeSlider :volume.sync="voice.volume" />
+      <VolumeSlider :volume.sync="voice.Volume" />
     </div>
   </div>
 </template>
@@ -32,9 +32,12 @@ export default {
     }
   },
   methods: {
-    setPlaybackInstrument(midiInstrumentId) {
-      this.playbackEngine.setInstrument(this.instrument.id, midiInstrumentId);
+    setPlaybackInstrument(voiceId, midiInstrumentId) {
+      this.playbackEngine.setInstrument(voiceId, midiInstrumentId);
     }
+  },
+  mounted() {
+    console.log("Instrument control mounted. Instrument: ", this.instrument);
   }
 };
 </script>
