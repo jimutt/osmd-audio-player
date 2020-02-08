@@ -81,7 +81,7 @@ export default class PlaybackEngine {
     return this.availableInstruments.find(i => i[0] === (voice as any).midiInstrumentId + 1);
   }
 
-  async setInstrument(voice: Voice, midiInstrumentId: number): Promise<void> {
+  public async setInstrument(voice: Voice, midiInstrumentId: number): Promise<void> {
     // @ts-ignore
     const player = await Soundfont.instrument(this.ac, this.getInstrumentName(midiInstrumentId - 1));
     (voice as any).midiInstrumentId = midiInstrumentId;
@@ -150,7 +150,7 @@ export default class PlaybackEngine {
 
   async stop() {
     this.state = PlaybackState.STOPPED;
-    this.stopInstruments();
+    this.stopPlayers();
     this.clearTimeouts();
     this.scheduler.reset();
     this.cursor.reset();
@@ -161,7 +161,7 @@ export default class PlaybackEngine {
   pause() {
     this.state = PlaybackState.PAUSED;
     this.ac.suspend();
-    this.stopInstruments();
+    this.stopPlayers();
     this.scheduler.setIterationStep(this.currentIterationStep);
     this.scheduler.pause();
     this.clearTimeouts();
@@ -242,7 +242,7 @@ export default class PlaybackEngine {
     this.timeoutHandles.push(setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
   }
 
-  private stopInstruments() {
+  private stopPlayers() {
     for (const iId in this.midiPlayers) {
       if (!this.midiPlayers.hasOwnProperty(iId)) continue;
       this.midiPlayers[iId].stop();

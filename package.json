@@ -10,7 +10,7 @@
   "license": "MIT",
   "dependencies": {
     "opensheetmusicdisplay": "^0.7.3",
-    "soundfont-player": "^0.11.0"
+    "soundfont-player": "^0.12.0"
   },
   "devDependencies": {
     "typescript": "^3.7.5"
