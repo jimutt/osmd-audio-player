@@ -4,8 +4,12 @@ export enum ArticulationStyle {
   Legato
 }
 
-export interface NotePlaybackOptions {
+export interface NotePlaybackStyle {
   articulation: ArticulationStyle;
-  velocity: number;
+}
+
+export interface NotePlaybackInstruction extends NotePlaybackStyle {
+  note: number;
+  gain: number;
   duration: number;
 }

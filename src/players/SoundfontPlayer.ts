@@ -1,12 +1,12 @@
 import { InstrumentPlayer, PlaybackInstrument } from "./InstrumentPlayer";
-import { NotePlaybackOptions } from "./NotePlaybackOptions";
+import { NotePlaybackStyle, NotePlaybackInstruction } from "./NotePlaybackOptions";
 import { midiInstruments } from "../midi/midiInstruments";
 import * as Soundfont from "soundfont-player";
 
 export class SoundfontPlayer implements InstrumentPlayer {
   public instruments: PlaybackInstrument[];
 
-  private players = [];
+  private players: Map<number, Soundfont.Player> = new Map();
   private audioContext: AudioContext;
 
   constructor() {
@@ -21,19 +21,39 @@ export class SoundfontPlayer implements InstrumentPlayer {
     this.audioContext = audioContext;
   }
 
-  async load(instrumentId: string | number) {
-    const instrument = this.instruments.find(i => i.midiId === instrumentId);
+  async load(midiId: number) {
+    const instrument = this.instruments.find(i => i.midiId === midiId);
     if (!instrument) {
-      throw new Error("SoundfontPlayer does not support midi instrument ID " + instrumentId);
+      throw new Error("SoundfontPlayer does not support midi instrument ID " + midiId);
     }
+    if (this.players.has(midiId)) return;
+
+    console.log("Loading instrument " + instrument.name);
+
     const player = await Soundfont.instrument(
+      //@ts-ignore
       this.audioContext,
       this.getSoundfontPlayerInstrumentName(instrument.name) as Soundfont.InstrumentName
     );
+    this.players.set(midiId, player);
   }
 
-  play: (instrumentId: string | number, pitch: string, options: NotePlaybackOptions) => void;
-  schedule: (midiId: number, notes: any[]) => void;
+  play: (midiId: string | number, options: NotePlaybackStyle) => void;
+
+  stop(midiId: number) {
+    if (!this.players.has(midiId)) return;
+    this.players.get(midiId).stop();
+  }
+
+  schedule(midiId: number, time: number, notes: NotePlaybackInstruction[]) {
+    this.verifyPlayerLoaded(midiId);
+    this.players.get(midiId).schedule(time, notes);
+    console.log("Schedules notes: ", notes);
+  }
+
+  private verifyPlayerLoaded(midiId: number) {
+    if (!this.players.has(midiId)) throw new Error("No soundfont player loaded for midi instrument " + midiId);
+  }
 
   private getSoundfontPlayerInstrumentName(midiName: string): string {
     return midiName.toLowerCase().replace(/\s+/g, "_");

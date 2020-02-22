@@ -1,4 +1,4 @@
-import { NotePlaybackOptions } from "./NotePlaybackOptions";
+import { NotePlaybackInstruction } from "./NotePlaybackOptions";
 
 export interface PlaybackInstrument {
   midiId: number;
@@ -10,6 +10,7 @@ export interface InstrumentPlayer {
   instruments: PlaybackInstrument[];
   init: (audioContext: AudioContext) => void;
   load: (midiId: number) => Promise<void>;
-  schedule: (midiId: number, notes: NotePlaybackInstruction[]) => void;
-  play: (midiId: number, pitch: string, options: NotePlaybackOptions) => void;
+  schedule: (midiId: number, time: number, notes: NotePlaybackInstruction[]) => void;
+  play: (midiId: number, options: NotePlaybackInstruction) => void;
+  stop: (midiId: number) => void;
 }
