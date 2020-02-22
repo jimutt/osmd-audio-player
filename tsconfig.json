@@ -3,7 +3,7 @@
     "outDir": "./dist",
     "lib": ["es2019", "DOM"],
     "target": "ES6",
-    "moduleResolution": "node"
+    "moduleResolution": "Node",
   },
   "include": ["src/**/*"]
 }

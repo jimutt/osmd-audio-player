@@ -1,15 +1,6 @@
-import * as Soundfont from "soundfont-player";
 import PlaybackScheduler from "./PlaybackScheduler";
-import {
-  Cursor,
-  OpenSheetMusicDisplay,
-  MusicSheet,
-  Note,
-  Instrument,
-  InvalidEnumArgumentException,
-  Voice
-} from "opensheetmusicdisplay";
-import { midiInstruments } from "./midiInstruments";
+import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note, Instrument, Voice } from "opensheetmusicdisplay";
+import { midiInstruments } from "./midi/midiInstruments";
 
 enum PlaybackState {
   INIT = "INIT",
@@ -78,12 +69,12 @@ export default class PlaybackEngine {
   public getPlaybackInstrument(voiceId: number): [number, string] {
     if (!this.sheet) return [0, ""];
     const voice = this.sheet.Instruments.flatMap(i => i.Voices).find(v => v.VoiceId === voiceId);
-    return this.availableInstruments.find(i => i[0] === (voice as any).midiInstrumentId + 1);
+    return this.availableInstruments.find(i => i[0] === (voice as any).midiInstrumentId);
   }
 
   public async setInstrument(voice: Voice, midiInstrumentId: number): Promise<void> {
     // @ts-ignore
-    const player = await Soundfont.instrument(this.ac, this.getInstrumentName(midiInstrumentId - 1));
+    const player = await Soundfont.instrument(this.ac, this.getInstrumentName(midiInstrumentId));
     (voice as any).midiInstrumentId = midiInstrumentId;
     this.midiPlayers[midiInstrumentId] = player;
   }
@@ -133,10 +124,6 @@ export default class PlaybackEngine {
     for (const player of players) {
       this.midiPlayers[player.midiId] = player.playback;
     }
-  }
-
-  getInstrumentName(midiId: number): string {
-    return midiInstruments[midiId][1].toLowerCase().replace(/\s+/g, "_");
   }
 
   async play() {
