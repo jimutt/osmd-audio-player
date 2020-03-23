@@ -27,17 +27,14 @@ export default class PlaybackScheduler {
   private loaderFutureTicks: Set<number> = new Set();
 
   private noteSchedulingCallback: NoteSchedulingCallback;
-  private iterationCallback: () => void;
 
   constructor(
     denominator: number,
     wholeNoteLength: number,
     audioContext: AudioContext,
     noteSchedulingCallback: NoteSchedulingCallback,
-    iterationCallback: () => void = null
   ) {
     this.noteSchedulingCallback = noteSchedulingCallback;
-    this.iterationCallback = iterationCallback;
     this.denominator = denominator;
     this.wholeNoteLength = wholeNoteLength;
     this.audioContext = audioContext;
@@ -63,8 +60,6 @@ export default class PlaybackScheduler {
   start() {
     this.playing = true;
     this.stepQueue.sort();
-    console.log("AudioContext time: ", this.audioContextTime);
-    console.log("Tick duration: ", this.tickDuration);
     this.audioContextStartTime = this.audioContext.currentTime;
     this.currentTickTimestamp = this.audioContextTime;
     if (!this.schedulerIntervalHandle) {
@@ -119,9 +114,7 @@ export default class PlaybackScheduler {
     this.currentTick = this.calculatedTick;
     this.currentTickTimestamp = this.audioContextTime;
 
-    let nextTick = this.stepQueue.steps[this.stepQueueIndex]
-      ? this.stepQueue.steps[this.stepQueueIndex].tick
-      : undefined;
+    let nextTick = this.stepQueue.steps[this.stepQueueIndex]?.tick
     while (this.nextTickAvailableAndWithinSchedulePeriod(nextTick)) {
       let step = this.stepQueue.steps[this.stepQueueIndex];
 
@@ -132,7 +125,7 @@ export default class PlaybackScheduler {
       this.noteSchedulingCallback(timeToTick / 1000, step.notes);
 
       this.stepQueueIndex++;
-      nextTick = this.stepQueue.steps[this.stepQueueIndex] ? this.stepQueue.steps[this.stepQueueIndex].tick : undefined;
+      nextTick = this.stepQueue.steps[this.stepQueueIndex]?.tick;
     }
 
     for (let tick of this.scheduledTicks) {
