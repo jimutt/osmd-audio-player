@@ -1,9 +1,9 @@
 <template>
   <div>
-    <div class="score-progress" v-if="scoreLoading">
+    <div class="score-progress" v-if="scoreLoading || !ready">
       <v-progress-circular :size="60" color="primary" indeterminate></v-progress-circular>
     </div>
-    <div class="score" ref="scorediv" v-show="!scoreLoading"></div>
+    <div class="score" ref="scorediv" v-show="!scoreLoading" :style="{opacity: ready ? 100 : 0}"></div>
   </div>
 </template>
 
@@ -12,7 +12,7 @@ import axios from "axios";
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
 
 export default {
-  props: ["score"],
+  props: ["score", "ready"],
   data() {
     return {
       osmd: null,

@@ -20,21 +20,9 @@
         />
         <h2 class="mt-5">About</h2>
         <p>
-          This is a proof of concept application enabling audio playback for
-          <a href="http://osmd.org">OSMD</a> scores. Built by
-          <a href="https://twitter.com/jimutt">Jimmy Utterström</a>
+          Vue.js demo for <a href="https://github.com/jimutt/osmd-audio-player">OSMD Audio player</a>.
+          Built by <a href="https://twitter.com/jimutt">Jimmy Utterström</a>
         </p>
-        <h2 class="mt-5">Limitations</h2>
-        <p>
-          At its current state the playback functionality is very basic, it does not interprate dynamics and has no way
-          to handle for example grace notes. In addition to the limited features the current build also contains the
-          following bugs:
-        </p>
-        <ul>
-          <li>
-            Occasional cursor desynchronization when using progress indicator to change cursor location in score.
-          </li>
-        </ul>
       </div>
       <div v-else>
         Loading...

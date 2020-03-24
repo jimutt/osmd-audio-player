@@ -16,7 +16,7 @@
     <v-content>
       <v-container fluid>
         <v-select :items="scores" label="Select Score" @change="scoreChanged" />
-        <Score @osmdInit="osmdInit" @scoreLoaded="scoreLoaded" :score="selectedScore" />
+        <Score @osmdInit="osmdInit" @scoreLoaded="scoreLoaded" :score="selectedScore" :ready="pbEngineReady" />
       </v-container>
       <PlaybackControls :playbackEngine="pbEngine" :scoreTitle="scoreTitle" />
     </v-content>
@@ -63,11 +63,13 @@ export default {
       console.log("Score loaded");
       if (this.osmd.sheet.title) this.scoreTitle = this.osmd.sheet.title.text;
       await this.pbEngine.loadScore(this.osmd);
+      console.log('pbEngine ready');
       this.pbEngineReady = true;
     },
     scoreChanged(scoreUrl) {
       if (this.pbEngine.state === "PLAYING") this.pbEngine.stop();
       this.selectedScore = scoreUrl;
+      this.pbEngineReady = false;
     }
   }
 };
