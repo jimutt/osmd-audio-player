@@ -6,8 +6,10 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
+    "install-demos": "npm install --prefix demos/vue-player-demo",
     "build-demos": "npm run build --prefix demos/vue-player-demo",
-    "build-all": "run-s build build-demos"
+    "build-all": "run-s build build-demos",
+    "netlify-build": "run-s build install-demos build-demos"
   },
   "author": "Jimmy Utterström",
   "license": "MIT",
