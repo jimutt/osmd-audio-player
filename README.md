@@ -1,6 +1,9 @@
 # OSMD Audio player
 Unoffical audio playback engine for [OpenSheetMusicDisplay](https://github.com/opensheetmusicdisplay/opensheetmusicdisplay). Successor meant to replace my previous proof of concept player & demo at https://github.com/jimutt/osmd-playback-demo.  
 
+This player is still in a very early state and lots of breaking and non-breaking changes will most likely be introduced before the first major release. 
+
+**Vue JS Demo**: https://osmd-audio-player-vue.netlify.com/
 
 Features:
 - Framework agnostic, not tied to a specific front end Framework
