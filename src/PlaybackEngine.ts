@@ -96,6 +96,7 @@ export default class PlaybackEngine {
     );
     this.countAndSetIterationSteps();
     this.ready = true;
+    this.state = PlaybackState.STOPPED;
   }
 
   private initInstruments() {
