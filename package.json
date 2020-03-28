@@ -6,8 +6,12 @@
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
-    "install-demos": "npm install --prefix demos/vue-player-demo",
-    "build-demos": "npm run build --prefix demos/vue-player-demo",
+    "install-demo:vue": "npm install --prefix demos/vue-player-demo",
+    "install-demo:basic": "npm install --prefix demos/basic",
+    "install-demos": "run-p install-demo:*",
+    "build-demo:vue": "npm run build --prefix demos/vue-player-demo",
+    "build-demo:basic": "npm run build --prefix demos/basic",
+    "build-demos": "run-p build-demo:*",
     "build-all": "run-s build build-demos",
     "netlify-build": "run-s build install-demos build-demos"
   },
