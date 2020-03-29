@@ -119,7 +119,9 @@ export default class PlaybackEngine {
   async play() {
     await this.ac.resume();
 
-    this.cursor.show();
+    if (this.state === PlaybackState.INIT || this.state === PlaybackState.STOPPED) {
+      this.cursor.show();
+    }
 
     this.state = PlaybackState.PLAYING;
     this.scheduler.start();
@@ -142,12 +144,6 @@ export default class PlaybackEngine {
     this.scheduler.setIterationStep(this.currentIterationStep);
     this.scheduler.pause();
     this.clearTimeouts();
-  }
-
-  resume() {
-    this.state = PlaybackState.PLAYING;
-    this.scheduler.resume();
-    this.ac.resume();
   }
 
   jumpToStep(step) {

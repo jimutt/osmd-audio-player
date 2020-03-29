@@ -19,11 +19,7 @@
             </v-list-tile-content>
 
             <v-list-tile-action :class="{ 'mr-2': $vuetify.breakpoint.mdAndUp }">
-              <v-btn
-                icon
-                @click="playbackEngine.state === 'PAUSED' ? playbackEngine.resume() : playbackEngine.play()"
-                v-if="playbackEngine.state !== 'PLAYING'"
-              >
+              <v-btn icon @click="playbackEngine.play()" v-if="playbackEngine.state !== 'PLAYING'">
                 <v-icon dark>play_arrow</v-icon>
               </v-btn>
               <v-btn v-else icon @click="playbackEngine.pause()">
