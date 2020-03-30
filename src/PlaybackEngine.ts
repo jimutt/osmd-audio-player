@@ -102,7 +102,6 @@ export default class PlaybackEngine {
   private initInstruments() {
     for (const i of this.sheet.Instruments) {
       for (const v of i.Voices) {
-        console.log(v);
         (v as any).midiInstrumentId = i.MidiInstrumentId;
       }
     }

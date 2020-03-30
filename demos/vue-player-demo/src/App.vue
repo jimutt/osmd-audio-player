@@ -63,7 +63,7 @@ export default {
       console.log("Score loaded");
       if (this.osmd.sheet.title) this.scoreTitle = this.osmd.sheet.title.text;
       await this.pbEngine.loadScore(this.osmd);
-      console.log('pbEngine ready');
+      console.log("pbEngine ready");
       this.pbEngineReady = true;
     },
     scoreChanged(scoreUrl) {

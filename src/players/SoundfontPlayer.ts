@@ -28,8 +28,6 @@ export class SoundfontPlayer implements InstrumentPlayer {
     }
     if (this.players.has(midiId)) return;
 
-    console.log("Loading instrument " + instrument.name);
-
     const player = await Soundfont.instrument(
       //@ts-ignore
       this.audioContext,
@@ -48,7 +46,6 @@ export class SoundfontPlayer implements InstrumentPlayer {
   schedule(midiId: number, time: number, notes: NotePlaybackInstruction[]) {
     this.verifyPlayerLoaded(midiId);
     this.players.get(midiId).schedule(time, notes);
-    console.log("Schedules notes: ", notes);
   }
 
   private verifyPlayerLoaded(midiId: number) {

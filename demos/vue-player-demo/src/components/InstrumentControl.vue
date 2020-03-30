@@ -35,9 +35,6 @@ export default {
     setPlaybackInstrument(voiceId, midiInstrumentId) {
       this.playbackEngine.setInstrument(voiceId, midiInstrumentId);
     }
-  },
-  mounted() {
-    console.log("Instrument control mounted. Instrument: ", this.instrument);
   }
 };
 </script>
