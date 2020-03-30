@@ -2,7 +2,8 @@
   "name": "osmd-audio-player",
   "version": "0.1.0",
   "description": "OSMD audio player",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "dev": "tsc -w",
     "build": "tsc",
