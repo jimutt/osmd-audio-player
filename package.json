@@ -18,6 +18,10 @@
   },
   "author": "Jimmy Utterström",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jimutt/osmd-audio-player"
+  },
   "dependencies": {
     "opensheetmusicdisplay": "^0.7.3",
     "soundfont-player": "^0.12.0"
