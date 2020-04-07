@@ -4,6 +4,12 @@ Unoffical audio playback engine for [OpenSheetMusicDisplay](https://github.com/o
 
 This player is still in a very early state and lots of breaking and non-breaking changes will most likely be introduced before the first major release. Use at your own risk!
 
+## Install
+
+```
+npm install osmd-audio-player
+```
+
 ## Demos
 
 ### Basic
