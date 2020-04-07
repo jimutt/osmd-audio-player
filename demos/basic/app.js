@@ -1,10 +1,10 @@
 import { OpenSheetMusicDisplay } from "opensheetmusicdisplay";
-import PlaybackEngine from "../../dist/PlaybackEngine";
+import AudioPlayer from "osmd-audio-player";
 import axios from "axios";
 
 (async () => {
   const osmd = new OpenSheetMusicDisplay(document.getElementById("score"));
-  const pbEngine = new PlaybackEngine();
+  const audioPlayer = new AudioPlayer();
 
   const scoreXml = await axios.get(
     "https://opensheetmusicdisplay.github.io/demo/sheets/MuzioClementi_SonatinaOpus36No3_Part1.xml"
@@ -12,30 +12,30 @@ import axios from "axios";
 
   await osmd.load(scoreXml.data);
   await osmd.render();
-  await pbEngine.loadScore(osmd);
+  await audioPlayer.loadScore(osmd);
 
   hideLoadingMessage();
-  registerButtonEvents(pbEngine);
+  registerButtonEvents(audioPlayer);
 })();
 
 function hideLoadingMessage() {
   document.getElementById("loading").style.display = "none";
 }
 
-function registerButtonEvents(pbEngine) {
+function registerButtonEvents(audioPlayer) {
   document.getElementById("btn-play").addEventListener("click", () => {
-    if (pbEngine.state === "STOPPED" || pbEngine.state === "PAUSED") {
-      pbEngine.play();
+    if (audioPlayer.state === "STOPPED" || audioPlayer.state === "PAUSED") {
+      audioPlayer.play();
     }
   });
   document.getElementById("btn-pause").addEventListener("click", () => {
-    if (pbEngine.state === "PLAYING") {
-      pbEngine.pause();
+    if (audioPlayer.state === "PLAYING") {
+      audioPlayer.pause();
     }
   });
   document.getElementById("btn-stop").addEventListener("click", () => {
-    if (pbEngine.state === "PLAYING" || pbEngine.state === "PAUSED") {
-      pbEngine.stop();
+    if (audioPlayer.state === "PLAYING" || audioPlayer.state === "PAUSED") {
+      audioPlayer.stop();
     }
   });
 }
