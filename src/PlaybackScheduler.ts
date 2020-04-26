@@ -98,9 +98,11 @@ export default class PlaybackScheduler {
     }
 
     for (let entry of currentVoiceEntries) {
-      for (let note of entry.Notes) {
-        this.loaderFutureTicks.add(thisTick + note.Length.RealValue * this.tickDenominator);
-        this.stepQueue.add(thisTick, note);
+      if (!entry.IsGrace) {
+        for (let note of entry.Notes) {
+          this.loaderFutureTicks.add(thisTick + note.Length.RealValue * this.tickDenominator);
+          this.stepQueue.add(thisTick, note);
+        }
       }
     }
 
