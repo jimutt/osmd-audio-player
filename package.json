@@ -1,6 +1,6 @@
 {
   "name": "osmd-audio-player",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "OSMD audio player",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -22,6 +22,13 @@
     "type": "git",
     "url": "https://github.com/jimutt/osmd-audio-player"
   },
+  "keywords": [
+    "MusicXML",
+    "Music XML",
+    "audio player",
+    "MusicXML audio",
+    "music notation"
+  ],
   "dependencies": {
     "opensheetmusicdisplay": "^0.7.3",
     "soundfont-player": "^0.12.0"
