@@ -4,12 +4,13 @@ import { midiInstruments } from "./midi/midiInstruments";
 import { SoundfontPlayer } from "./players/SoundfontPlayer";
 import { InstrumentPlayer } from "./players/InstrumentPlayer";
 import { NotePlaybackInstruction, ArticulationStyle } from "./players/NotePlaybackOptions";
+import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./noteHelpers";
 
 enum PlaybackState {
   INIT = "INIT",
   PLAYING = "PLAYING",
   STOPPED = "STOPPED",
-  PAUSED = "PAUSED"
+  PAUSED = "PAUSED",
 }
 
 interface PlaybackSettings {
@@ -57,7 +58,7 @@ export default class PlaybackEngine {
 
     this.playbackSettings = {
       bpm: this.defaultBpm,
-      masterVolume: 1
+      masterVolume: 1,
     };
 
     this.state = PlaybackState.INIT;
@@ -160,7 +161,7 @@ export default class PlaybackEngine {
     this.scheduler.setIterationStep(schedulerStep);
   }
 
-  setBpm(bpm) {
+  setBpm(bpm: number) {
     this.playbackSettings.bpm = bpm;
     if (this.scheduler) this.scheduler.wholeNoteLength = this.wholeNoteLength;
   }
@@ -184,9 +185,10 @@ export default class PlaybackEngine {
     let scheduledNotes: Map<number, NotePlaybackInstruction[]> = new Map();
 
     for (let note of notes) {
-      const noteDuration = this.getNoteDuration(note);
+      const noteDuration = getNoteDuration(note, this.wholeNoteLength);
       if (noteDuration === 0) continue;
-      const noteVolume = this.getNoteVolume(note);
+      const noteVolume = getNoteVolume(note);
+      const noteArticulation = getNoteArticulationStyle(note);
 
       const midiPlaybackInstrument = (note as any).ParentVoiceEntry.ParentVoice.midiInstrumentId;
       const fixedKey = note.ParentVoiceEntry.ParentVoice.Parent.SubInstruments[0].fixedKey || 0;
@@ -199,7 +201,7 @@ export default class PlaybackEngine {
         note: note.halfTone - fixedKey * 12,
         duration: noteDuration / 1000,
         gain: noteVolume,
-        articulation: ArticulationStyle.None
+        articulation: noteArticulation,
       });
     }
 
@@ -230,21 +232,5 @@ export default class PlaybackEngine {
     if (this.state !== PlaybackState.PLAYING) return;
     if (this.currentIterationStep > 0) this.cursor.next();
     ++this.currentIterationStep;
-  }
-
-  private getNoteDuration(note: Note) {
-    let duration = note.Length.RealValue * this.wholeNoteLength;
-    if (note.NoteTie) {
-      if (Object.is(note.NoteTie.StartNote, note) && note.NoteTie.Notes[1]) {
-        duration += note.NoteTie.Notes[1].Length.RealValue * this.wholeNoteLength;
-      } else {
-        duration = 0;
-      }
-    }
-    return duration;
-  }
-
-  private getNoteVolume(note: Note) {
-    return note.ParentVoiceEntry.ParentVoice.Volume;
   }
 }
