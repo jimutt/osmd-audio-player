@@ -1,5 +1,5 @@
 import { InstrumentPlayer, PlaybackInstrument } from "./InstrumentPlayer";
-import { NotePlaybackStyle, NotePlaybackInstruction } from "./NotePlaybackOptions";
+import { NotePlaybackStyle, NotePlaybackInstruction, ArticulationStyle } from "./NotePlaybackOptions";
 import { midiInstruments } from "../midi/midiInstruments";
 import * as Soundfont from "soundfont-player";
 
@@ -45,7 +45,17 @@ export class SoundfontPlayer implements InstrumentPlayer {
 
   schedule(midiId: number, time: number, notes: NotePlaybackInstruction[]) {
     this.verifyPlayerLoaded(midiId);
+    this.applyDynamics(notes);
     this.players.get(midiId).schedule(time, notes);
+  }
+
+  private applyDynamics(notes: NotePlaybackInstruction[]): void {
+    for(const note of notes) {
+      if(note.articulation === ArticulationStyle.Staccato) {
+        note.gain = Math.max(note.gain + 0.3, note.gain * 1.3);
+        note.duration = Math.min(note.duration * 0.4, 0.4);
+      }
+    }
   }
 
   private verifyPlayerLoaded(midiId: number) {
