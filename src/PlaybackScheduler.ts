@@ -63,7 +63,7 @@ export default class PlaybackScheduler {
     this.audioContextStartTime = this.audioContext.currentTime;
     this.currentTickTimestamp = this.audioContextTime;
     if (!this.schedulerIntervalHandle) {
-      this.schedulerIntervalHandle = setInterval(() => this.scheduleIterationStep(), this.scheduleInterval);
+      this.schedulerIntervalHandle = window.setInterval(() => this.scheduleIterationStep(), this.scheduleInterval);
     }
   }
 
@@ -116,7 +116,7 @@ export default class PlaybackScheduler {
     this.currentTick = this.calculatedTick;
     this.currentTickTimestamp = this.audioContextTime;
 
-    let nextTick = this.stepQueue.steps[this.stepQueueIndex]?.tick
+    let nextTick = this.stepQueue.steps[this.stepQueueIndex]?.tick;
     while (this.nextTickAvailableAndWithinSchedulePeriod(nextTick)) {
       let step = this.stepQueue.steps[this.stepQueueIndex];
 
