@@ -1,7 +1,7 @@
 export class EventEmitter {
-  private subscribers: Map<string, Function[]>;
+  private subscribers: Map<string, Function[]> = new Map();
 
-  public on(event: string, callback: () => any) {
+  public on(event: string, callback: (...args: any[]) => any) {
     if (!this.subscribers.get(event)) {
       this.subscribers.set(event, []);
     }
