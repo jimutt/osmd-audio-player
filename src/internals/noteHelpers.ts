@@ -1,11 +1,10 @@
 import { Note } from "opensheetmusicdisplay/build/dist/src";
-import { ArticulationStyle } from "./players/NotePlaybackOptions";
+import { ArticulationStyle } from "../players/NotePlaybackOptions";
 
-export function getNoteArticulationStyle(note: Note) : ArticulationStyle {
-  if(note.ParentVoiceEntry.isStaccato()) {
+export function getNoteArticulationStyle(note: Note): ArticulationStyle {
+  if (note.ParentVoiceEntry.isStaccato()) {
     return ArticulationStyle.Staccato;
-  } 
-  else {
+  } else {
     return ArticulationStyle.None;
   }
 }
