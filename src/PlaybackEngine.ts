@@ -224,7 +224,7 @@ export default class PlaybackEngine {
 
     this.timeoutHandles.push(
       window.setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 35)), // Subtracting 35 milliseconds to compensate for update delay
-      window.setTimeout(() => this.events.emit(PlaybackEvent.ITERATION, scheduledNotes), audioDelay)
+      window.setTimeout(() => this.events.emit(PlaybackEvent.ITERATION, notes), audioDelay)
     );
   }
 
