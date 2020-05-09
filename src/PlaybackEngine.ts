@@ -4,7 +4,7 @@ import { midiInstruments } from "./midi/midiInstruments";
 import { SoundfontPlayer } from "./players/SoundfontPlayer";
 import { InstrumentPlayer } from "./players/InstrumentPlayer";
 import { NotePlaybackInstruction, ArticulationStyle } from "./players/NotePlaybackOptions";
-import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./noteHelpers";
+import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./internals/noteHelpers";
 
 enum PlaybackState {
   INIT = "INIT",

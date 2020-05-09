@@ -1,4 +1,4 @@
-import StepQueue from "./StepQueue";
+import StepQueue from "./internals/StepQueue";
 import { VoiceEntry } from "opensheetmusicdisplay/build/dist/src";
 
 type NoteSchedulingCallback = (delay: number, notes: any) => void;
