@@ -209,7 +209,7 @@ export default class PlaybackEngine {
       this.instrumentPlayer.schedule(midiId, this.ac.currentTime + audioDelay, notes);
     }
 
-    this.timeoutHandles.push(setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
+    this.timeoutHandles.push(window.setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
   }
 
   private stopPlayers() {
