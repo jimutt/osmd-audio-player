@@ -5,12 +5,18 @@ import { SoundfontPlayer } from "./players/SoundfontPlayer";
 import { InstrumentPlayer } from "./players/InstrumentPlayer";
 import { NotePlaybackInstruction, ArticulationStyle } from "./players/NotePlaybackOptions";
 import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./internals/noteHelpers";
+import { EventEmitter } from "./internals/EventEmitter";
 
-enum PlaybackState {
+export enum PlaybackState {
   INIT = "INIT",
   PLAYING = "PLAYING",
   STOPPED = "STOPPED",
   PAUSED = "PAUSED",
+}
+
+export enum PlaybackEvent {
+  STATE_CHANGE = "state-change",
+  ITERATION = "iteration",
 }
 
 interface PlaybackSettings {
@@ -26,6 +32,7 @@ export default class PlaybackEngine {
   private denominator: number;
   private scheduler: PlaybackScheduler;
   private instrumentPlayer: InstrumentPlayer;
+  private events: EventEmitter<PlaybackEvent>;
 
   private iterationSteps: number;
   private currentIterationStep: number;
@@ -38,12 +45,14 @@ export default class PlaybackEngine {
   public scoreInstruments: Instrument[] = [];
   public ready: boolean = false;
 
-  constructor() {
-    this.ac = new AudioContext();
+  constructor(context: AudioContext = new AudioContext(), instrumentPlayer: InstrumentPlayer = new SoundfontPlayer()) {
+    this.ac = context;
     this.ac.suspend();
 
-    this.instrumentPlayer = new SoundfontPlayer();
+    this.instrumentPlayer = instrumentPlayer;
     this.instrumentPlayer.init(this.ac);
+
+    this.events = new EventEmitter();
 
     this.cursor = null;
     this.sheet = null;
@@ -61,7 +70,7 @@ export default class PlaybackEngine {
       masterVolume: 1,
     };
 
-    this.state = PlaybackState.INIT;
+    this.setState(PlaybackState.INIT);
   }
 
   get wholeNoteLength(): number {
@@ -97,7 +106,7 @@ export default class PlaybackEngine {
     );
     this.countAndSetIterationSteps();
     this.ready = true;
-    this.state = PlaybackState.STOPPED;
+    this.setState(PlaybackState.STOPPED);
   }
 
   private initInstruments() {
@@ -123,12 +132,12 @@ export default class PlaybackEngine {
       this.cursor.show();
     }
 
-    this.state = PlaybackState.PLAYING;
+    this.setState(PlaybackState.PLAYING);
     this.scheduler.start();
   }
 
   async stop() {
-    this.state = PlaybackState.STOPPED;
+    this.setState(PlaybackState.STOPPED);
     this.stopPlayers();
     this.clearTimeouts();
     this.scheduler.reset();
@@ -138,7 +147,7 @@ export default class PlaybackEngine {
   }
 
   pause() {
-    this.state = PlaybackState.PAUSED;
+    this.setState(PlaybackState.PAUSED);
     this.ac.suspend();
     this.stopPlayers();
     this.scheduler.setIterationStep(this.currentIterationStep);
@@ -164,6 +173,10 @@ export default class PlaybackEngine {
   setBpm(bpm: number) {
     this.playbackSettings.bpm = bpm;
     if (this.scheduler) this.scheduler.wholeNoteLength = this.wholeNoteLength;
+  }
+
+  public on(event: PlaybackEvent, cb: (...args: any[]) => void) {
+    this.events.on(event, cb);
   }
 
   private countAndSetIterationSteps() {
@@ -209,7 +222,15 @@ export default class PlaybackEngine {
       this.instrumentPlayer.schedule(midiId, this.ac.currentTime + audioDelay, notes);
     }
 
-    this.timeoutHandles.push(window.setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 40))); // Subtracting 40 milliseconds to compensate for update delay
+    this.timeoutHandles.push(
+      window.setTimeout(() => this.iterationCallback(), Math.max(0, audioDelay * 1000 - 35)), // Subtracting 35 milliseconds to compensate for update delay
+      window.setTimeout(() => this.events.emit(PlaybackEvent.ITERATION, notes), audioDelay)
+    );
+  }
+
+  private setState(state: PlaybackState) {
+    this.state = state;
+    this.events.emit(PlaybackEvent.STATE_CHANGE, state);
   }
 
   private stopPlayers() {
