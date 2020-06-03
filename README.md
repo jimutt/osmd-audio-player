@@ -45,5 +45,6 @@ You might notice that there's currently a quite large delay when switching instr
 - React demo project
 - Updated & properly structured Vue demo
 - Quickstart guide & more extensive Readme
+- Custom audio stack for playing soundfonts
 - Stricter typing
 - Unit tests
