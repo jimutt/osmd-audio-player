@@ -33,7 +33,6 @@ A more full-featured demo featuring configurable instruments, level control, swi
 - Individual level controls
 - Automatic tempo detection from score
 - Automatic instrument assignment
-- Written in Typescript for better DX for maintainers and users
 
 ## Roadmap
 
