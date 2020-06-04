@@ -16,7 +16,13 @@
     <v-content>
       <v-container fluid>
         <v-select :items="scores" label="Select Score" @change="scoreChanged" />
-        <Score @osmdInit="osmdInit" @scoreLoaded="scoreLoaded" :score="selectedScore" :ready="pbEngineReady" />
+        <Score
+          v-if="mounted"
+          @osmdInit="osmdInit"
+          @scoreLoaded="scoreLoaded"
+          :score="selectedScore"
+          :ready="pbEngineReady"
+        />
       </v-container>
       <PlaybackControls :playbackEngine="pbEngine" :scoreTitle="scoreTitle" />
     </v-content>
@@ -48,7 +54,8 @@ export default {
       selectedScore: null,
       osmd: null,
       scoreTitle: "",
-      drawer: true
+      drawer: true,
+      mounted: false
     };
   },
   computed: {},
@@ -71,6 +78,14 @@ export default {
       this.selectedScore = scoreUrl;
       this.pbEngineReady = false;
     }
+  },
+  mounted() {
+    setTimeout(() => {
+      // This extra delay before rendering the score component seems to help occasional issues where the 
+      // OSMD cursor img element gets detached from the DOM and doesn't show unless 
+      // you refresh the page. A less pretty workaround until root cause is determined
+      this.mounted = true;
+    }, 200)
   }
 };
 </script>
