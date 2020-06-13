@@ -19,7 +19,7 @@ export default class PlaybackScheduler {
 
   private schedulerIntervalHandle: number = null;
   private scheduleInterval: number = 200; // Milliseconds
-  private schedulePeriod: number = 1500;
+  private schedulePeriod: number = 500;
   private tickDenominator: number = 1024;
 
   private lastTickOffset: number = 300; // Hack to get the initial notes play better
@@ -32,7 +32,7 @@ export default class PlaybackScheduler {
     denominator: number,
     wholeNoteLength: number,
     audioContext: AudioContext,
-    noteSchedulingCallback: NoteSchedulingCallback,
+    noteSchedulingCallback: NoteSchedulingCallback
   ) {
     this.noteSchedulingCallback = noteSchedulingCallback;
     this.denominator = denominator;
