@@ -53,7 +53,7 @@ export const midiInstruments: [number, string][] = [
   [51, "SynthStrings 2"],
   [52, "Choir Aahs"],
   [53, "Voice Oohs"],
-  [54, "Synth Voice"],
+  [54, "Synth Choir"],
   [55, "Orchestra Hit"],
   [56, "Trumpet"],
   [57, "Trombone"],
