@@ -27,7 +27,8 @@ export default {
   },
   async mounted() {
     this.osmd = new OpenSheetMusicDisplay(this.$refs.scorediv, {
-      followCursor: true
+      followCursor: true,
+      autoResize: false
       // backend: "canvas"
     });
     this.$emit("osmdInit", this.osmd);
