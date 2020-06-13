@@ -1,6 +1,7 @@
 import { InstrumentPlayer, PlaybackInstrument } from "./InstrumentPlayer";
 import { NotePlaybackStyle, NotePlaybackInstruction, ArticulationStyle } from "./NotePlaybackOptions";
 import { midiInstruments } from "../midi/midiInstruments";
+import supportedSoundfontInstruments from "./musyngkiteInstruments";
 import * as Soundfont from "soundfont-player";
 
 export class SoundfontPlayer implements InstrumentPlayer {
@@ -10,11 +11,13 @@ export class SoundfontPlayer implements InstrumentPlayer {
   private audioContext: AudioContext;
 
   constructor() {
-    this.instruments = midiInstruments.map(i => ({
-      midiId: i[0],
-      name: i[1],
-      loaded: false
-    }));
+    this.instruments = midiInstruments
+      .filter(i => supportedSoundfontInstruments.includes(this.getSoundfontInstrumentName(i[1])))
+      .map(i => ({
+        midiId: i[0],
+        name: i[1],
+        loaded: false,
+      }));
   }
 
   init(audioContext: AudioContext) {
@@ -31,7 +34,7 @@ export class SoundfontPlayer implements InstrumentPlayer {
     const player = await Soundfont.instrument(
       //@ts-ignore
       this.audioContext,
-      this.getSoundfontPlayerInstrumentName(instrument.name) as Soundfont.InstrumentName
+      this.getSoundfontInstrumentName(instrument.name) as Soundfont.InstrumentName
     );
     this.players.set(midiId, player);
   }
@@ -50,8 +53,8 @@ export class SoundfontPlayer implements InstrumentPlayer {
   }
 
   private applyDynamics(notes: NotePlaybackInstruction[]): void {
-    for(const note of notes) {
-      if(note.articulation === ArticulationStyle.Staccato) {
+    for (const note of notes) {
+      if (note.articulation === ArticulationStyle.Staccato) {
         note.gain = Math.max(note.gain + 0.3, note.gain * 1.3);
         note.duration = Math.min(note.duration * 0.4, 0.4);
       }
@@ -62,7 +65,7 @@ export class SoundfontPlayer implements InstrumentPlayer {
     if (!this.players.has(midiId)) throw new Error("No soundfont player loaded for midi instrument " + midiId);
   }
 
-  private getSoundfontPlayerInstrumentName(midiName: string): string {
+  private getSoundfontInstrumentName(midiName: string): string {
     return midiName.toLowerCase().replace(/\s+/g, "_");
   }
 }

@@ -2,7 +2,7 @@ import PlaybackScheduler from "./PlaybackScheduler";
 import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note, Instrument, Voice } from "opensheetmusicdisplay";
 import { midiInstruments } from "./midi/midiInstruments";
 import { SoundfontPlayer } from "./players/SoundfontPlayer";
-import { InstrumentPlayer } from "./players/InstrumentPlayer";
+import { InstrumentPlayer, PlaybackInstrument } from "./players/InstrumentPlayer";
 import { NotePlaybackInstruction, ArticulationStyle } from "./players/NotePlaybackOptions";
 import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./internals/noteHelpers";
 import { EventEmitter } from "./internals/EventEmitter";
@@ -41,7 +41,7 @@ export default class PlaybackEngine {
 
   public playbackSettings: PlaybackSettings;
   public state: PlaybackState;
-  public availableInstruments = midiInstruments;
+  public availableInstruments: PlaybackInstrument[];
   public scoreInstruments: Instrument[] = [];
   public ready: boolean = false;
 
@@ -51,6 +51,8 @@ export default class PlaybackEngine {
 
     this.instrumentPlayer = instrumentPlayer;
     this.instrumentPlayer.init(this.ac);
+
+    this.availableInstruments = this.instrumentPlayer.instruments;
 
     this.events = new EventEmitter();
 
@@ -77,10 +79,10 @@ export default class PlaybackEngine {
     return Math.round((60 / this.playbackSettings.bpm) * this.denominator * 1000);
   }
 
-  public getPlaybackInstrument(voiceId: number): [number, string] {
-    if (!this.sheet) return [0, ""];
+  public getPlaybackInstrument(voiceId: number): PlaybackInstrument {
+    if (!this.sheet) return null;
     const voice = this.sheet.Instruments.flatMap(i => i.Voices).find(v => v.VoiceId === voiceId);
-    return this.availableInstruments.find(i => i[0] === (voice as any).midiInstrumentId);
+    return this.availableInstruments.find(i => i.midiId === (voice as any).midiInstrumentId);
   }
 
   public async setInstrument(voice: Voice, midiInstrumentId: number): Promise<void> {
@@ -120,9 +122,22 @@ export default class PlaybackEngine {
   private async loadInstruments() {
     let playerPromises: Promise<void>[] = [];
     for (const i of this.sheet.Instruments) {
+      const pbInstrument = this.availableInstruments.find(pbi => pbi.midiId === i.MidiInstrumentId);
+      if (pbInstrument == null) {
+        this.fallbackToPiano(i);
+      }
       playerPromises.push(this.instrumentPlayer.load(i.MidiInstrumentId));
     }
     await Promise.all(playerPromises);
+  }
+
+  private fallbackToPiano(i: Instrument) {
+    console.warn(`Can't find playback instrument for midiInstrumentId ${i.MidiInstrumentId}. Falling back to piano`);
+    i.MidiInstrumentId = 0;
+
+    if (this.availableInstruments.find(i => i.midiId === 0) == null) {
+      throw new Error("Piano fallback failed, grand piano not supported");
+    }
   }
 
   async play() {
