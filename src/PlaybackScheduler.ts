@@ -24,7 +24,6 @@ export default class PlaybackScheduler {
 
   private lastTickOffset: number = 300; // Hack to get the initial notes play better
   private playing: boolean = false;
-  private loaderFutureTicks: Set<number> = new Set();
 
   private noteSchedulingCallback: NoteSchedulingCallback;
 
@@ -94,21 +93,19 @@ export default class PlaybackScheduler {
   loadNotes(currentVoiceEntries: VoiceEntry[]) {
     let thisTick = this.lastTickOffset;
     if (this.stepQueue.steps.length > 0) {
-      thisTick = Math.min(...this.loaderFutureTicks);
+      thisTick = this.stepQueue.getFirstEmptyTick();
     }
 
     for (let entry of currentVoiceEntries) {
       if (!entry.IsGrace) {
         for (let note of entry.Notes) {
-          this.loaderFutureTicks.add(thisTick + note.Length.RealValue * this.tickDenominator);
-          this.stepQueue.add(thisTick, note);
+          this.stepQueue.addNote(thisTick, note);
+          this.stepQueue.createStep(thisTick + note.Length.RealValue * this.tickDenominator);
         }
       }
     }
 
-    for (let tick of this.loaderFutureTicks) {
-      if (tick <= thisTick) this.loaderFutureTicks.delete(tick);
-    }
+    this.stepQueue.sort();
   }
 
   private scheduleIterationStep() {
