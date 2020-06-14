@@ -14,21 +14,32 @@ export default class StepQueue {
     return this.steps.values();
   }
 
-  add(tick: number, note: Note) {
-    let existingStep = this.steps.find(s => s.tick === tick);
-    if (existingStep) {
-      existingStep.notes.push(note);
-    } else {
-      this.steps.push({ tick, notes: [note] });
+  createStep(tick: number): ScheduledNotes {
+    let step = this.steps.find(s => s.tick === tick);
+    if (!step) {
+      step = { tick, notes: [] };
+      this.steps.push(step);
     }
+
+    return step;
   }
 
-  delete(value: ScheduledNotes) {
+  addNote(tick: number, note: Note): void {
+    const step = this.steps.find(s => s.tick === tick) ?? this.createStep(tick);
+    step.notes.push(note);
+  }
+
+  delete(value: ScheduledNotes): void {
     const index = this.steps.findIndex(v => v.tick === value.tick);
     if (index != null) this.steps.splice(index, 1);
   }
 
-  sort(): void {
-    this.steps.sort((a, b) => (a.tick > b.tick ? 1 : 0));
+  sort(): StepQueue {
+    this.steps.sort((a, b) => a.tick - b.tick);
+    return this;
+  }
+
+  getFirstEmptyTick(): number {
+    return this.sort().steps.filter(s => !s.notes.length)[0].tick;
   }
 }
