@@ -35,7 +35,7 @@ export default class StepQueue {
   }
 
   sort(): StepQueue {
-    this.steps.sort((a, b) => (a.tick < b.tick ? -1 : 0));
+    this.steps.sort((a, b) => a.tick - b.tick);
     return this;
   }
 

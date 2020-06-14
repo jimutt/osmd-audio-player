@@ -104,8 +104,6 @@ export default class PlaybackScheduler {
         }
       }
     }
-
-    this.stepQueue.sort();
   }
 
   private scheduleIterationStep() {
