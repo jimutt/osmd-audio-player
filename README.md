@@ -38,6 +38,7 @@ You might notice that there's currently a quite large delay when switching instr
 
 ## Roadmap
 
+- Safari support 
 - Repeat support
 - Dynamics support
 - Grace note support
