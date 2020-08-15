@@ -32,7 +32,8 @@
   ],
   "dependencies": {
     "opensheetmusicdisplay": "^0.7.3",
-    "soundfont-player": "^0.12.0"
+    "soundfont-player": "^0.12.0",
+    "standardized-audio-context": "^24.1.25"
   },
   "devDependencies": {
     "@babel/core": "^7.9.6",
