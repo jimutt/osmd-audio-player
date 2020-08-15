@@ -2,6 +2,7 @@ import PlaybackEngine from ".";
 import { mock, instance, when } from "ts-mockito";
 import { OpenSheetMusicDisplay, Cursor, MusicSheet, PlaybackSettings, Fraction } from "opensheetmusicdisplay";
 import { PlaybackEvent, PlaybackState } from "./PlaybackEngine";
+import { IAudioContext } from "standardized-audio-context";
 
 jest.mock("./PlaybackScheduler");
 
@@ -70,12 +71,12 @@ describe("PlaybackEngine", () => {
   });
 });
 
-function createMockedAudioContext(): AudioContext {
+function createMockedAudioContext(): IAudioContext {
   return ({
     currentTime: 0,
     suspend: jest.fn(async () => {}),
     resume: jest.fn(async () => {}),
-  } as unknown) as AudioContext;
+  } as unknown) as IAudioContext;
 }
 
 function createOsmdMock(): OpenSheetMusicDisplay {

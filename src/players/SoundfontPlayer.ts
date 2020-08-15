@@ -1,6 +1,7 @@
 import { InstrumentPlayer, PlaybackInstrument } from "./InstrumentPlayer";
 import { NotePlaybackStyle, NotePlaybackInstruction, ArticulationStyle } from "./NotePlaybackOptions";
 import { midiInstruments } from "../midi/midiInstruments";
+import { IAudioContext } from "standardized-audio-context";
 import supportedSoundfontInstruments from "./musyngkiteInstruments";
 import * as Soundfont from "soundfont-player";
 
@@ -8,7 +9,7 @@ export class SoundfontPlayer implements InstrumentPlayer {
   public instruments: PlaybackInstrument[];
 
   private players: Map<number, Soundfont.Player> = new Map();
-  private audioContext: AudioContext;
+  private audioContext: IAudioContext;
 
   constructor() {
     this.instruments = midiInstruments
@@ -20,7 +21,7 @@ export class SoundfontPlayer implements InstrumentPlayer {
       }));
   }
 
-  init(audioContext: AudioContext) {
+  init(audioContext: IAudioContext) {
     this.audioContext = audioContext;
   }
 

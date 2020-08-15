@@ -21,12 +21,12 @@ Basic no-framework demo with only play, pause & stop functionality.
 
 ### Vue JS + Vuetify
 
-A more full-featured demo featuring configurable instruments, level control, switching scores & changing tempo. 
+A more full-featured demo featuring configurable instruments, level control, switching scores & changing tempo.
 
 **Live demo:** https://osmd-audio-player-demo-vue.netlify.com/ <br/>
 **Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/vue-player-demo
 
-You might notice that there's currently a quite large delay when switching instruments. It's due to the in-advance scheduling to prevent interruptions & timing issues in the audio playback, and there's currently no clearing/reset of the buffer when an instrument change takes place. Some improvements in that area are planned. 
+You might notice that there's currently a quite large delay when switching instruments. It's due to the in-advance scheduling to prevent interruptions & timing issues in the audio playback, and there's currently no clearing/reset of the buffer when an instrument change takes place. Some improvements in that area are planned.
 
 ## Features
 
@@ -48,3 +48,13 @@ You might notice that there's currently a quite large delay when switching instr
 - Custom audio stack for playing soundfonts
 - Stricter typing
 - Unit tests
+
+## Credits
+
+<div style="max-width: 340px;">
+
+[![Browserstack](https://s3.eu-central-1.amazonaws.com/ju-media/Browserstack-logo%402x.png)](http://browserstack.com/)
+
+</div>
+
+Thank you Browserstack for offering me your Open Source license for cross browser testing.

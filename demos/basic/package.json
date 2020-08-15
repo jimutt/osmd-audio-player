@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "serve": "parcel index.html",
+    "serve": "parcel index.html --port 1337",
     "build": "parcel build index.html"
   },
   "author": "Jimmy Utterström",

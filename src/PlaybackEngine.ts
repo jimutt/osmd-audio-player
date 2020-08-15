@@ -1,11 +1,11 @@
 import PlaybackScheduler from "./PlaybackScheduler";
 import { Cursor, OpenSheetMusicDisplay, MusicSheet, Note, Instrument, Voice } from "opensheetmusicdisplay";
-import { midiInstruments } from "./midi/midiInstruments";
 import { SoundfontPlayer } from "./players/SoundfontPlayer";
 import { InstrumentPlayer, PlaybackInstrument } from "./players/InstrumentPlayer";
-import { NotePlaybackInstruction, ArticulationStyle } from "./players/NotePlaybackOptions";
+import { NotePlaybackInstruction } from "./players/NotePlaybackOptions";
 import { getNoteDuration, getNoteVolume, getNoteArticulationStyle } from "./internals/noteHelpers";
 import { EventEmitter } from "./internals/EventEmitter";
+import { AudioContext, IAudioContext } from "standardized-audio-context";
 
 export enum PlaybackState {
   INIT = "INIT",
@@ -25,7 +25,7 @@ interface PlaybackSettings {
 }
 
 export default class PlaybackEngine {
-  private ac: AudioContext;
+  private ac: IAudioContext;
   private defaultBpm: number = 100;
   private cursor: Cursor;
   private sheet: MusicSheet;
@@ -45,7 +45,7 @@ export default class PlaybackEngine {
   public scoreInstruments: Instrument[] = [];
   public ready: boolean = false;
 
-  constructor(context: AudioContext = new AudioContext(), instrumentPlayer: InstrumentPlayer = new SoundfontPlayer()) {
+  constructor(context: IAudioContext = new AudioContext(), instrumentPlayer: InstrumentPlayer = new SoundfontPlayer()) {
     this.ac = context;
     this.ac.suspend();
 

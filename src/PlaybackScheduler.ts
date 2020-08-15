@@ -1,5 +1,6 @@
 import StepQueue from "./internals/StepQueue";
 import { VoiceEntry } from "opensheetmusicdisplay/build/dist/src";
+import { IAudioContext } from "standardized-audio-context";
 
 type NoteSchedulingCallback = (delay: number, notes: any) => void;
 
@@ -14,7 +15,7 @@ export default class PlaybackScheduler {
   private currentTick = 0;
   private currentTickTimestamp = 0;
 
-  private audioContext: AudioContext;
+  private audioContext: IAudioContext;
   private audioContextStartTime: number = 0;
 
   private schedulerIntervalHandle: number = null;
@@ -30,7 +31,7 @@ export default class PlaybackScheduler {
   constructor(
     denominator: number,
     wholeNoteLength: number,
-    audioContext: AudioContext,
+    audioContext: IAudioContext,
     noteSchedulingCallback: NoteSchedulingCallback
   ) {
     this.noteSchedulingCallback = noteSchedulingCallback;
