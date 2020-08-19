@@ -12,7 +12,7 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.19.2",
-    "opensheetmusicdisplay": "^0.7.3",
+    "opensheetmusicdisplay": "^0.8.4",
     "osmd-audio-player": "../../"
   },
   "devDependencies": {

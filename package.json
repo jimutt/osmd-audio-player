@@ -31,7 +31,7 @@
     "music notation"
   ],
   "dependencies": {
-    "opensheetmusicdisplay": "^0.7.3",
+    "opensheetmusicdisplay": "^0.8.4",
     "soundfont-player": "^0.12.0",
     "standardized-audio-context": "^24.1.25"
   },

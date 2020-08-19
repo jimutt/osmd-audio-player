@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "axios": "^0.18.1",
-    "opensheetmusicdisplay": "git://github.com/opensheetmusicdisplay/opensheetmusicdisplay.git#develop",
-    "soundfont-player": "^0.10.7",
+    "opensheetmusicdisplay": "^0.8.4",
+    "soundfont-player": "^0.12.0",
     "vue": "^2.6.11",
     "vuetify": "^1.5.22"
   },
