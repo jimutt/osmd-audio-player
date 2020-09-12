@@ -32,9 +32,9 @@ You might notice that there's currently a quite large delay when switching instr
 
 Same functionality as the basic demo but without any Node.js requirements. Uses the UMD build of OSMD and the audio player for simple plug and play functionality in any web page.
 
-**Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/umd-web**
+**Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/umd-web
 
-The minified UMD build can be referenced from JSDelivr: https://cdn.jsdelivr.net/npm/osmd-audio-player/umd/OsmdAudioPlayer.min.js"
+The minified UMD build can be referenced from JSDelivr: https://cdn.jsdelivr.net/npm/osmd-audio-player/umd/OsmdAudioPlayer.min.js
 
 ## Features
 
