@@ -8,13 +8,14 @@
     "dev": "tsc -w",
     "test": "jest",
     "build": "tsc",
+    "build-umd": "rollup -c rollup.umd.config.js",
     "install-demo:vue": "npm install --prefix demos/vue-player-demo",
     "install-demo:basic": "npm install --prefix demos/basic",
     "install-demos": "run-p install-demo:*",
     "build-demo:vue": "npm run build --prefix demos/vue-player-demo",
     "build-demo:basic": "npm run build --prefix demos/basic",
     "build-demos": "run-p build-demo:*",
-    "build-all": "run-s build build-demos",
+    "build-all": "run-s build build-umd build-demos",
     "netlify-build": "run-s build install-demos build-demos"
   },
   "author": "Jimmy Utterström",
@@ -39,11 +40,16 @@
     "@babel/core": "^7.9.6",
     "@babel/preset-env": "^7.9.6",
     "@babel/preset-typescript": "^7.9.0",
+    "@rollup/plugin-commonjs": "^15.0.0",
+    "@rollup/plugin-node-resolve": "^9.0.0",
+    "@rollup/plugin-typescript": "^6.0.0",
     "@types/jest": "^25.2.1",
     "babel-jest": "^26.0.1",
     "jest": "^26.0.1",
     "npm-run-all": "^4.1.5",
+    "rollup": "^2.26.11",
     "ts-mockito": "^2.5.0",
+    "tslib": "^2.0.1",
     "typescript": "^3.7.5"
   }
 }
