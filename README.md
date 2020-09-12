@@ -10,7 +10,7 @@ This player is still in a very early state and lots of breaking and non-breaking
 npm install osmd-audio-player
 ```
 
-## Demos
+## Demos / usage
 
 ### Basic
 
@@ -27,6 +27,14 @@ A more full-featured demo featuring configurable instruments, level control, swi
 **Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/vue-player-demo
 
 You might notice that there's currently a quite large delay when switching instruments. It's due to the in-advance scheduling to prevent interruptions & timing issues in the audio playback, and there's currently no clearing/reset of the buffer when an instrument change takes place. Some improvements in that area are planned.
+
+### Basic (UMD build)
+
+Same functionality as the basic demo but without any Node.js requirements. Uses the UMD build of OSMD and the audio player for simple plug and play functionality in any web page.
+
+**Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/umd-web**
+
+The minified UMD build can be referenced from JSDelivr: https://cdn.jsdelivr.net/npm/osmd-audio-player/umd/OsmdAudioPlayer.min.js"
 
 ## Features
 
