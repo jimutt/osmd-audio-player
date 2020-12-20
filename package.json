@@ -7,7 +7,8 @@
   "scripts": {
     "dev": "tsc -w",
     "test": "jest",
-    "build": "tsc --outDir dist",
+    "prepare": "npm run build",
+    "build": "tsc -p tsconfig.build.json",
     "build-umd": "rollup -c rollup.umd.config.js",
     "install-demo:vue": "npm install --prefix demos/vue-player-demo",
     "install-demo:basic": "npm install --prefix demos/basic",
