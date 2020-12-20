@@ -1,6 +1,6 @@
 {
   "name": "osmd-audio-player",
-  "version": "0.6.2",
+  "version": "0.6.3",
   "description": "OSMD audio player",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
