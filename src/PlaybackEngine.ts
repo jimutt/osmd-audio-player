@@ -213,6 +213,9 @@ export default class PlaybackEngine {
     let scheduledNotes: Map<number, NotePlaybackInstruction[]> = new Map();
 
     for (let note of notes) {
+      if (note.isRest()) {
+        continue;
+      }
       const noteDuration = getNoteDuration(note, this.wholeNoteLength);
       if (noteDuration === 0) continue;
       const noteVolume = getNoteVolume(note);
