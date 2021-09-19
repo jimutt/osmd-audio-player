@@ -1,3 +1,5 @@
+ℹ️ This project is no longer in active development. I still keep an eye on it and it's open for contributions/PRs but I am not working on any new feature implementations. The main reason being that there is an official early access audio player to be found (currently only available for donors): https://github.com/sponsors/opensheetmusicdisplay
+
 # 🎵 OSMD Audio player
 
 Unoffical audio playback engine for [OpenSheetMusicDisplay](https://github.com/opensheetmusicdisplay/opensheetmusicdisplay). Successor meant to replace my previous proof of concept player & demo at https://github.com/jimutt/osmd-playback-demo.
