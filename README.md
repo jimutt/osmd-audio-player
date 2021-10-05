@@ -1,4 +1,4 @@
-ℹ️ This project is no longer in active development. I still keep an eye on it and it's open for contributions/PRs but I am not working on any new feature implementations. The main reason being that there is an official early access audio player to be found (currently only available for donors): https://github.com/sponsors/opensheetmusicdisplay
+ℹ️ This project is no longer in active development. I still keep an eye on it and it's open for contributions/PRs but I am not actively working on new feature implementations. The main reason being that there is an official early access audio player to be found (currently only available for donors): https://github.com/sponsors/opensheetmusicdisplay
 
 # 🎵 OSMD Audio player
 
@@ -30,6 +30,14 @@ A more full-featured demo featuring configurable instruments, level control, swi
 
 You might notice that there's currently a quite large delay when switching instruments. It's due to the in-advance scheduling to prevent interruptions & timing issues in the audio playback, and there's currently no clearing/reset of the buffer when an instrument change takes place. Some improvements in that area are planned.
 
+
+### Basic (React)
+
+Barebones React example provided by @joshstovall. 
+
+**Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/react-demo
+
+
 ### Basic (UMD build)
 
 Same functionality as the basic demo but without any Node.js requirements. Uses the UMD build of OSMD and the audio player for simple plug and play functionality in any web page.
@@ -52,7 +60,6 @@ The minified UMD build can be referenced from JSDelivr: https://cdn.jsdelivr.net
 - Dynamics support
 - Grace note support
 - Click to set playback position
-- React demo project
 - Updated & properly structured Vue demo
 - Quickstart guide & more extensive Readme
 - Custom audio stack for playing soundfonts
