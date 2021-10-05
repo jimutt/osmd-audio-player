@@ -33,7 +33,7 @@ You might notice that there's currently a quite large delay when switching instr
 
 ### Basic (React)
 
-Barebones React example provided by @joshstovall. 
+Barebones React example, contribution by [@joshstovall](https://github.com/joshstovall). 
 
 **Source:** https://github.com/jimutt/osmd-audio-player/tree/master/demos/react-demo
 
