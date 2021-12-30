@@ -11,7 +11,7 @@
   "author": "Jimmy Utterström",
   "license": "MIT",
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "opensheetmusicdisplay": "^0.8.4",
     "osmd-audio-player": "../../"
   },
