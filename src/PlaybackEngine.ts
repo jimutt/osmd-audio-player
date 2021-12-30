@@ -29,7 +29,6 @@ export default class PlaybackEngine {
   private defaultBpm: number = 100;
   private cursor: Cursor;
   private sheet: MusicSheet;
-  private denominator: number;
   private scheduler: PlaybackScheduler;
   private instrumentPlayer: InstrumentPlayer;
   private events: EventEmitter<PlaybackEvent>;
@@ -58,7 +57,6 @@ export default class PlaybackEngine {
 
     this.cursor = null;
     this.sheet = null;
-    this.denominator = null;
 
     this.scheduler = null;
 
@@ -76,7 +74,7 @@ export default class PlaybackEngine {
   }
 
   get wholeNoteLength(): number {
-    return Math.round((60 / this.playbackSettings.bpm) * this.denominator * 1000);
+    return Math.round((60 / this.playbackSettings.bpm) * 4000);
   }
 
   public getPlaybackInstrument(voiceId: number): PlaybackInstrument {
@@ -95,7 +93,6 @@ export default class PlaybackEngine {
     this.sheet = osmd.Sheet;
     this.scoreInstruments = this.sheet.Instruments;
     this.cursor = osmd.cursor;
-    this.denominator = this.sheet.SheetPlaybackSetting.rhythm.Denominator;
     if (this.sheet.HasBPMInfo) {
       this.setBpm(this.sheet.DefaultStartTempoInBpm);
     }
@@ -103,9 +100,10 @@ export default class PlaybackEngine {
     await this.loadInstruments();
     this.initInstruments();
 
-    this.scheduler = new PlaybackScheduler(this.denominator, this.wholeNoteLength, this.ac, (delay, notes) =>
+    this.scheduler = new PlaybackScheduler(this.wholeNoteLength, this.ac, (delay, notes) =>
       this.notePlaybackCallback(delay, notes)
     );
+
     this.countAndSetIterationSteps();
     this.ready = true;
     this.setState(PlaybackState.STOPPED);
