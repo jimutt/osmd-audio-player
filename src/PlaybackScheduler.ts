@@ -5,7 +5,6 @@ import { IAudioContext } from "standardized-audio-context";
 type NoteSchedulingCallback = (delay: number, notes: any) => void;
 
 export default class PlaybackScheduler {
-  public denominator: number;
   public wholeNoteLength: number;
 
   private stepQueue = new StepQueue();
@@ -28,14 +27,8 @@ export default class PlaybackScheduler {
 
   private noteSchedulingCallback: NoteSchedulingCallback;
 
-  constructor(
-    denominator: number,
-    wholeNoteLength: number,
-    audioContext: IAudioContext,
-    noteSchedulingCallback: NoteSchedulingCallback
-  ) {
+  constructor(wholeNoteLength: number, audioContext: IAudioContext, noteSchedulingCallback: NoteSchedulingCallback) {
     this.noteSchedulingCallback = noteSchedulingCallback;
-    this.denominator = denominator;
     this.wholeNoteLength = wholeNoteLength;
     this.audioContext = audioContext;
   }
