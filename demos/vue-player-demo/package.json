@@ -16,7 +16,7 @@
   "devDependencies": {
     "@babel/polyfill": "^7.8.3",
     "@vue/cli-plugin-babel": "^3.12.1",
-    "@vue/cli-service": "^3.12.1",
+    "@vue/cli-service": "^5.0.8",
     "sass": "^1.25.0",
     "sass-loader": "^7.3.1",
     "vue-cli-plugin-vuetify": "^0.1.6",
